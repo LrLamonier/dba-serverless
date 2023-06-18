@@ -1,0 +1,9 @@
+survivor    perk
+
+killer      perk
+            
+
+perk
+
+item
+
