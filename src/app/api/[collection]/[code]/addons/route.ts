@@ -1,45 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
-import models from "@/data/models";
 import dbConnect from "@/lib/dbConnect";
-import { TProject, limitFieldsAggregate } from "@/utils/fns";
+import models from "@/data/models";
+import { TCode, getOne, limitFields } from "@/utils/fns";
 
 export const GET = async (
   req: NextRequest,
-  { params: { collection } }: { params: { collection: string } }
+  {
+    params: { collection, code },
+  }: {
+    params: { collection: string; code: string };
+  }
 ) => {
   try {
-    if (!models[collection]) {
+    if (
+      !models[collection] ||
+      (collection !== "killer" && collection !== "item")
+    ) {
       return NextResponse.json(
         {
-          status: "error",
           message: "The realm you are trying to reach is beyond your grasp.",
         },
         { status: 404 }
       );
     }
 
-    await dbConnect();
+    const codeFieldName: TCode = {};
+    if (collection === "killer") {
+      codeFieldName.killerCode = code;
+    } else {
+      codeFieldName.itemType = code;
+    }
 
-    const queryAmount: number =
-      Number(req.nextUrl.searchParams.get("amount")) || 1;
-    const amount: number =
-      queryAmount >= 1 && queryAmount <= 10 ? queryAmount : 1;
-    const fields: TProject = limitFieldsAggregate(req);
+    dbConnect();
 
-    const document: any = await models[collection].aggregate([
-      {
-        $sample: { size: amount },
-      },
-      ...fields,
-    ]);
+    const document = await models[collection + "-addon"]
+      .find(codeFieldName)
+      .select(limitFields(req));
 
     if (document.length === 0) {
       return NextResponse.json(
         {
+          status: "fail",
+          results: 0,
           message:
             "What you are looking for is nowhere to be found on the Entity's realm.",
         },
-        { status: 204 }
+        { status: 404 }
       );
     }
 
@@ -55,6 +61,7 @@ export const GET = async (
     return NextResponse.json(
       {
         status: "fail",
+        results: null,
         message:
           "Claudette burned a Sacrificial Ward and cancelled your endpoint offering.",
       },

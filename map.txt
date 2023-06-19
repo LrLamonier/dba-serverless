@@ -1,9 +1,25 @@
-survivor    perk
+item (all)          random
+                    code            addons
 
-killer      perk
-            
+item-addon (all)    random
+                    code
 
-perk
+killer (all)        random
+                    code            power
+                                    addons
+                                    perks
 
-item
+killer-addon (all)  random
+                    code
 
+killer-perk (all)   random
+                    code
+
+killer-power (all)  random
+                    code
+
+survivor (all)      random
+                    code            perks
+
+survivor-perk (all) random
+                    code

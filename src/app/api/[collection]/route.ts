@@ -8,9 +8,9 @@ export const GET = async (
   req: NextRequest,
   { params: { collection } }: { params: { collection: string } }
 ) => {
-  if (collection === "nbelieve") {
-    return NextResponse.redirect(new URL("/api/omagah", req.url));
-  }
+  // if (collection === "nbelieve") {
+  //   return NextResponse.redirect(new URL("/api/omagah", req.url));
+  // }
   try {
     if (!models[collection]) {
       return NextResponse.json(
