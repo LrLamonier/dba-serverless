@@ -23,3 +23,16 @@ const models: IModels = {
 };
 
 export default models;
+
+// killer addon
+// killer perk
+// killer power
+// survivor perk
+// item addon
+
+// if (
+//   (collection !== "killer" && collection !== "survivor" && collection !== "item") ||
+//   (collection === "killer" && (extra !== "addon" && extra !== "perk" && extra !== "power")) ||
+//   (collection === "survivor" && extra !== "perk") ||
+//   (collection === "item" && extra !== "addon")
+// ) {}

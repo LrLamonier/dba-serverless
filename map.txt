@@ -1,3 +1,32 @@
+item (all)  1        random 2
+                    code 3            addons 4
+
+item-addon (all)  5  random 6
+                    code 7
+
+killer (all)      8  random 9
+                    code     10       power 11
+                                    addons 12
+                                    perks 13
+
+killer-addon (all) 14 random 15
+                    code 16
+
+killer-perk (all)  17 random 18
+                    code 19
+
+killer-power (all) 20 random 21
+                    code 22
+
+survivor (all)    23  random 24
+                    code       25     perks 26
+
+survivor-perk (all) 27 random 28
+                    code 29
+
+
+uncomment lines on importdevdata
+
 item (all)          random
                     code            addons
 
@@ -23,3 +52,6 @@ survivor (all)      random
 
 survivor-perk (all) random
                     code
+
+
+uncomment lines on importdevdata

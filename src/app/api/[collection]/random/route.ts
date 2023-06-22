@@ -52,6 +52,7 @@ export const GET = async (
       { status: 200 }
     );
   } catch (err) {
+    console.log(`error at route: /api/${collection}/random`, err);
     return NextResponse.json(
       {
         status: "fail",

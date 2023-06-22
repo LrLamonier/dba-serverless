@@ -3,11 +3,6 @@ import models from "@/data/models";
 import dbConnect from "@/lib/dbConnect";
 import { getOne } from "@/utils/fns";
 
-type TCode = {
-  code?: string;
-  killerCode?: string;
-};
-
 export const GET = async (
   req: NextRequest,
   {
@@ -29,7 +24,7 @@ export const GET = async (
     const resBody = await getOne(collection, code, req);
     return NextResponse.json(...resBody);
   } catch (err) {
-    console.log(err);
+    console.log(`error at: /api/${collection}/${code}`, err);
     return NextResponse.json(
       {
         status: "fail",

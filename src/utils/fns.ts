@@ -16,6 +16,7 @@ interface IAdd {
 
 export type TCode = {
   code?: string;
+  survivorCode?: string;
   killerCode?: string;
   itemType?: string;
 };
@@ -83,7 +84,6 @@ export const getOne = async (
       codeFieldName.code = code;
     }
 
-    console.log("document");
     const document = await models[collection]
       .find(codeFieldName)
       .select(limitFields(req));

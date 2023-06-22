@@ -1,21 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import models from "@/data/models";
-import { TCode, getOne, limitFields } from "@/utils/fns";
+import { TCode, limitFields } from "@/utils/fns";
 
 export const GET = async (
   req: NextRequest,
   {
-    params: { collection, code },
+    params: { collection, code, additional },
   }: {
-    params: { collection: string; code: string };
+    params: { collection: string; code: string; additional: string };
   }
 ) => {
   try {
-    if (
-      !models[collection] ||
-      (collection !== "killer" && collection !== "item")
-    ) {
+    const additionalName = additional.endsWith("s")
+      ? additional.slice(0, -1)
+      : additional;
+
+    if (!models[collection + "-" + additionalName]) {
       return NextResponse.json(
         {
           message: "The realm you are trying to reach is beyond your grasp.",
@@ -27,41 +28,43 @@ export const GET = async (
     const codeFieldName: TCode = {};
     if (collection === "killer") {
       codeFieldName.killerCode = code;
-    } else {
+    }
+    if (collection === "survivor") {
+      codeFieldName.survivorCode = code;
+    }
+    if (collection === "item") {
       codeFieldName.itemType = code;
     }
 
     dbConnect();
 
-    const document = await models[collection + "-addon"]
+    const document = await models[collection + "-" + additionalName]
       .find(codeFieldName)
       .select(limitFields(req));
 
     if (document.length === 0) {
       return NextResponse.json(
         {
-          status: "fail",
-          results: 0,
           message:
             "What you are looking for is nowhere to be found on the Entity's realm.",
         },
-        { status: 404 }
+        { status: 204 }
       );
     }
 
-    return NextResponse.json(
-      {
-        status: "success",
-        results: document.length,
-        data: document,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      status: "fail",
+      results: document.length,
+      data: document,
+    });
   } catch (err) {
+    console.log(
+      `error at route: /api/${collection}/${code}/${additional}`,
+      err
+    );
     return NextResponse.json(
       {
         status: "fail",
-        results: null,
         message:
           "Claudette burned a Sacrificial Ward and cancelled your endpoint offering.",
       },

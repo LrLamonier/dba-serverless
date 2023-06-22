@@ -2,15 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import APIFeatures from "@/utils/ApiFeatures";
 import models from "@/data/models";
-import AppError from "@/utils/AppError";
 
 export const GET = async (
   req: NextRequest,
   { params: { collection } }: { params: { collection: string } }
 ) => {
-  // if (collection === "nbelieve") {
-  //   return NextResponse.redirect(new URL("/api/omagah", req.url));
-  // }
   try {
     if (!models[collection]) {
       return NextResponse.json(
@@ -49,6 +45,7 @@ export const GET = async (
       { status: 200 }
     );
   } catch (err: any) {
+    console.log(`error at route: /api/${collection}`, err);
     return NextResponse.json(
       {
         status: "fail",
