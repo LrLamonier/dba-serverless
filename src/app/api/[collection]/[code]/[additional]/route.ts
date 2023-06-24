@@ -16,7 +16,7 @@ export const GET = async (
       ? additional.slice(0, -1)
       : additional;
 
-    if (!models[collection + "-" + additionalName]) {
+    if (!models[collection + "-" + additional]) {
       return NextResponse.json(
         {
           message: "The realm you are trying to reach is beyond your grasp.",
@@ -38,7 +38,7 @@ export const GET = async (
 
     dbConnect();
 
-    const document = await models[collection + "-" + additionalName]
+    const document = await models[collection + "-" + additional]
       .find(codeFieldName)
       .select(limitFields(req));
 

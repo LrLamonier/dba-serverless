@@ -1,5 +1,12 @@
 # Dead by API - A Dead by Daylight data API (and database!)
 
+## Hey!
+
+> I'm [Lucas](https://www.lucaslamonier.com/) and I built this API for you! Download it, use for your projects, create new features, ~~fix it~~ and have fun!
+If you use this code and feel like it, show me what you made. It'll make my day to see someone putting this thing to good use! 😉
+
+<br/>
+
 This API features 30 survivors, 27 killers, 197 perks, 588 add-ons, 32 items, and 29 endpoints! Updated for patch 5.7.1 (May 3rd, 2022).
 
 Built with Next.js, MongoDB, and friends!
@@ -10,19 +17,46 @@ This API uses data from both in-game and the [Dead by Daylight Wiki](https://dea
 
 This repo contains the source code of the API, the database models and schema, a script to import the data into a Mongo database, and thorough (hopefully) instructions on how to get it going.
 
-## Quick links
+## Summary
 
 - [Overview](#overview)
+  - [Data structure](#data-structure)
+  - [Name codes](#name-codes)
+    - [Code examples](#code-examples)
+  - [Field selection query](#field-selection-query)
+    - [Field selection example](#example)
+- [Endpoints](#endpoints)
+  - [API route structure](#api-route-structure)
+  - [Collection](#collection)
+  - [Code | Random](#code--random)
+    - [Code](#code)
+    - [Random](#random)
+  - [Additional](#additional)
+
 
 ## Overview
 
-The data is divided into 8 collections: item, item-addon, killer, killer-addon, killer-perk, killer-power, survivor, and survivor-perk. All routes are GET routes.
+### Data structure
+
+The data is divided into 8 collections:
+
+- [item](#item)
+- [item-addon](#item-addon)
+- [killer](#killer)
+- [killer-addon](#killer-addon)
+- [killer-perk](#killer-perk)
+- [survivor](#survivor)
+- [survivor-perk](#survivor-perk)
+
+Click on the name of the collection to see its model or [here](#models) to go to the model section.
 
 ### Name codes
 
-This API features a code system to identify each survivor, killer, perk, add-on, or item. The code is the element's name in lowercase and without spaces or special characters.
+This API features a code system to identify each survivor, killer, perk, add-on, or item. The code is the element's name in lowercase and without spaces or special characters. Every document in every collection has its own unique code.
 
-#### Examples
+This API features a code system that helps you quickly find a specific resource. A document's code is its name in lowercase, without spaces, and special characters. Accented letters are replaced. For example: `Onryō` becomes `onryo`. See more examples below.
+
+##### Code examples
 
 | Name                         | Code                    |
 | :--------------------------- | :---------------------- |
@@ -33,223 +67,157 @@ This API features a code system to identify each survivor, killer, perk, add-on,
 
 ### Field selection query
 
-On all routes, it is possible to choose which fields you want to get back on your response by adding a `?fields=` query string to the request followed by the field names separated by commas.
+It is possible to filter which fields will be returned in your request. To do so, add a `fields` query string with the name(s) of the field(s) you want. When selecting multiple fields, separate them with commas.
 
-`?fields=<field names>`
+Field selection is available on all routes.
 
-Example:
+`?fields=<field>`
+
+##### Example
 
 ```http
-GET /api/survs/felixrichter?fields=name,role,perks_names
+GET /api/survivor/felixrichter?fields=name,role,perks_names
 ```
 
-returns:
+Returns:
 
 ```json
 {
   "status": "success",
-  "data": [
-    {
-      "_id": "626fef241b005986989820f3",
-      "name": "Felix Richter",
-      "role": "Visionary Architect",
-      "perks_names": ["Visionary", "Desperate Measures", "Built to Last"]
-    }
-  ]
+  "results": 1,
+  "data": {
+    "name": "Felix Richter",
+    "role": "Visionary Architect",
+    "perks_names": [
+      "Visionary",
+      "Desperate Measures",
+      "Built to Last"
+    ]
+  }
 }
 ```
 
-Check out the [model of each collection]() to see which fields are available.
+For more details on available fields, refer to the [models](#models) section.
 
 ## Endpoints
 
-This API is built on top of Next.js' dynamic routing. Essentially, the API has one single route with 3 dynamic segments: `<collection>`, `<code>`, and `<additional>`
+### API route structure
 
-### Get all documents
+Dead by API routes are divided into 3 segments: the collection name, specific or random document, and an additional parameter to retrieve documents related to the first one.
+
+### Collection
 
 ```http
 GET /api/<collection>
 ```
 
-The `/api/<collection>` returns all documents from the given collection. The options are: `item`, `item-addon`, `killer`, `killer-addon`, `killer-perk`, `killer-power`, `survivor`, and `survivor-perk`. An invalid parameter returns an error.
+Providing only the collection name will return all of its documents. For example, `GET /api/killer` will return every single killer in the game. Note that the collection parameter is singular, passing `killers` will return an error.
+[Fields](#field-selection-query) available.
 
-Example: `/api/killer?fields=overview,terrorRadius`
+### Code | Random
 
-### Get random sample
+There are two options for the second parameter: the [code](#name-codes) or the word random.
 
-```http
-GET /api/<collection>/random
-```
-
-This endpoint returns a sample of N random documents, up to a maximum of 10. Use the `?amount=<number>` query. A request with an amount number outside the range of 1 to 10 (or even something that's not a number at all) will default to 1 document.
-
-Example: `/api/killer-addon?amount=5&fields=code`
-
-### Get specific document
-
-### Survivors
-
-#### Get all Survivors
+#### Code
 
 ```http
-  GET /api/survs
+GET /api/<collection>/<code>
 ```
 
-#### Get one random Survivor
+Retrieves one single document based on the code supplied. `GET /api/survivor/felixrichter` will return Felix's document.
+[Fields](#field-selection-query) available.
+
+#### Random
 
 ```http
-  GET /api/survs/random
+GET /api/item/random
 ```
 
-#### Get specific Survivor
+Fetches a random sample from the given collection. The default amount is 1, but it is possible to get up to 10. In order to do that, use the amount query:
+
+`?amount=<number>`
+
+Passing a number below 1, higher than 10, or not a number at all, defaults to 1.
+
+You can combo amount with [fields](#field-selection-query): `?amount=1&fields=name,description`
+
+### Additional
+
+Finally, the last segment retrieves data related to the collection:
+
+- Killer: `power`, `perk`, and `addon`
+- Survivor: `perk`
+- Item: `addon`
+
+⚠ Additional queries can only be used in routes that received a `<code>` parameter. It won't work for `<random>` requests.
 
 ```http
-  GET /api/survs/<survivor code>
+GET /api/<collection>/<code>/<additional>
 ```
 
-#### Get perks of a specific Survivor
+Examples:
 
 ```http
-  GET /api/survs/<survivor code>/perks
+GET /api/killer/trapper/addon
+GET /api/killer/trapper/perk
+GET /api/killer/trapper/power
+
+GET /api/survivor/felixrichter/perk
+
+GET /api/item/flashlight/addon
 ```
 
-### Killers
+The additional queries are meant to retrieve addons, perks, and powers from specific killers/survivors/items. You can access the collections `item-addon`, `killer-addon`, `killer-perk` and `survivor-perk` to get [all documents](#collection) or [random samples](#random).
+[Fields](#field-selection-query) available.
 
-#### Get all Killers
+## Running the code
 
-```http
-  GET /api/killers
-```
+In order to run this API, you need:
 
-#### Get one random Killer
+- Git (optional) to clone the repository
+  - Alternatively, you can download the code directly from the green "code" button on the top of the page
+  - Read the docs on [how to get started with Git](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
 
-```http
-  GET /api/killers/random
-```
+- Node (to run the thing, version 18.16.1 or higher)
+  - [Download and install](https://nodejs.org/en/download)
 
-#### Get specific Killer
+- MongoDB (the actual database)
+  - This one is a little tricky and requires a considerable amount of work
+  - There are two possibilites:
+      1) Run locally, [some tips here](https://zellwk.com/blog/local-mongodb/), or
+      2) Run it in the magical place called [_the cloud_](https://www.mongodb.com/)
 
-```http
-  GET /api/killers/<killer code>
-```
+## Quickstart
 
-#### Get the power of a specific Killer
+#### 1. Get the code
 
-```http
-  GET /api/killers/<killer code>/power
-```
+`git clone` or download the code.
 
-#### Get the power Add-ons of a specific Killer
+#### 2. Installing dependencies
 
-```http
-  GET /api/killers/<killer code>/addons
-```
+- Open your favorite CLI in the root folder of the project.
+- Run `npm install`
+- Wait for the dependencies to install
 
-#### Get the perks of a specific Killer
+#### 3. Run it!
 
-```http
-  GET /api/killers/<killer code>/perks
-```
+- Run `npm run dev`
+- The API should be running on `http://localhost:3000/api/`
+- You can build scripts to fetch data or use API testing tools such as [Postman](https://www.postman.com/) and [Insomnia](https://insomnia.rest/).
 
-#### Get all Killer powers
 
-```http
-  GET /api/killers/powers
-```
+## Populating the database
 
-#### Get one random Killer power
+The folder `data` contains
 
-```http
-  GET /api/killers/powers/random
-```
 
-#### Get all Killer power Add-ons
 
-```http
-  GET /api/killers/addons
-```
 
-#### Get one random Killer power Add-on
 
-```http
-  GET /api/killers/powers/random
-```
 
-#### Get specific Killer power Add-on
 
-```http
-  GET /api/killers/powers/<add-on code>
-```
 
-### Perks
 
-#### Get all Survivor perks
-
-```http
-  GET /api/perks/surv
-```
-
-#### Get one random Survivor perk
-
-```http
-  GET /api/perks/surv/random
-```
-
-#### Get all Killer perks
-
-```http
-  GET /api/perks/killer
-```
-
-#### Get one random Killer perk
-
-```http
-  GET /api/perks/killer/random
-```
-
-### Items
-
-#### Get all Items
-
-```http
-  GET /api/items
-```
-
-#### Get one random Item
-
-```http
-  GET /api/items/random
-```
-
-#### Get one specific Item
-
-```http
-  GET /api/items/<item code>
-```
-
-#### Get one specific Item's Add-ons
-
-```http
-  GET /api/items/<item code>/addons
-```
-
-#### Get all Item Add-ons
-
-```http
-  GET /api/items/addons
-```
-
-#### Get one random Item Add-on
-
-```http
-  GET /api/items/addons/random
-```
-
-#### Get specific Item Add-on
-
-```http
-  GET /api/items/addons/<Add-on code>
-```
 
 ## Additional information
 
