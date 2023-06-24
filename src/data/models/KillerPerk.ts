@@ -1,34 +1,6 @@
 import { Schema, model, models } from "mongoose";
 import { prop, modelOptions, Severity } from "@typegoose/typegoose";
 
-@modelOptions({
-  options: {
-    allowMixed: Severity.ALLOW,
-  },
-})
-export class KillerPerk {
-  @prop({ required: true })
-  id: number;
-
-  @prop({ required: true })
-  name: string;
-
-  @prop({ required: true })
-  code: string;
-
-  @prop({ required: true })
-  killerCode: string;
-
-  @prop({ required: true })
-  killerName: string;
-
-  @prop({ required: true })
-  description: string;
-
-  @prop({ required: true })
-  icon: string;
-}
-
 export interface IKillerPerk {
   id: number;
   name: string;
@@ -40,9 +12,9 @@ export interface IKillerPerk {
 }
 
 const killerPerkSchema = new Schema<IKillerPerk>({
-  id: { type: Number, required: true },
-  name: { type: String, required: true },
-  code: { type: String, required: true },
+  id: { type: Number, unique: true, required: true },
+  name: { type: String, unique: true, required: true },
+  code: { type: String, unique: true, required: true },
   killerCode: { type: String, required: true },
   killerName: { type: String, required: true },
   description: { type: String, required: true },

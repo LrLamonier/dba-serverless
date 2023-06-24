@@ -11,9 +11,9 @@ export interface ISurvivorPerk {
 }
 
 const survivorPerkSchema = new Schema<ISurvivorPerk>({
-  id: { type: Number, required: true },
-  name: { type: String, required: true },
-  code: { type: String, required: true },
+  id: { type: Number, unique: true, required: true },
+  name: { type: String, unique: true, required: true },
+  code: { type: String, unique: true, required: true },
   survivorCode: { type: String, required: true },
   survivorName: { type: String, required: true },
   description: { type: String, required: true },

@@ -19,9 +19,9 @@ export const GET = async (
 
     await dbConnect();
 
-    const queryString: string | null = req.nextUrl.searchParams.get("fields");
+    const queryString = req.nextUrl.searchParams.get("fields");
 
-    const document: any = await new APIFeatures(
+    const document = await new APIFeatures(
       models[collection].find(),
       queryString
     ).limitFields().query;
@@ -32,7 +32,7 @@ export const GET = async (
           message:
             "What you are looking for is nowhere to be found on the Entity's realm.",
         },
-        { status: 204 }
+        { status: 404 }
       );
     }
 

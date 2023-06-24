@@ -14,17 +14,17 @@ const itemAddonSchema = new mongoose.Schema({
   itemType: {
     type: String,
     required: [true, "Invalid item type"],
-    unique: true,
+    unique: false,
   },
   rarity: {
     type: String,
     required: [true, "Invalid item type"],
-    unique: true,
+    unique: false,
   },
   description: {
     type: String,
     required: [true, "Invalid item type"],
-    unique: true,
+    unique: false,
   },
   icon: {
     type: String,

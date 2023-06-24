@@ -12,8 +12,8 @@ export interface IItem {
 const itemSchema = new Schema<IItem>({
   name: { type: String, required: true, unique: true },
   code: { type: String, required: true, unique: true },
-  type: { type: String, required: true },
-  rarity: { type: String, required: true },
+  type: { type: String, required: false },
+  rarity: { type: String, required: false },
   description: { type: String, required: true, unique: true },
   icon: { type: String, required: true, unique: true },
 });

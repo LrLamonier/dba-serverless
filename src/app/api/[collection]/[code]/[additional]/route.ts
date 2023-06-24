@@ -12,10 +12,6 @@ export const GET = async (
   }
 ) => {
   try {
-    const additionalName = additional.endsWith("s")
-      ? additional.slice(0, -1)
-      : additional;
-
     if (!models[collection + "-" + additional]) {
       return NextResponse.json(
         {
@@ -48,7 +44,7 @@ export const GET = async (
           message:
             "What you are looking for is nowhere to be found on the Entity's realm.",
         },
-        { status: 204 }
+        { status: 404 }
       );
     }
 

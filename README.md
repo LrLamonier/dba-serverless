@@ -32,7 +32,28 @@ This repo contains the source code of the API, the database models and schema, a
     - [Code](#code)
     - [Random](#random)
   - [Additional](#additional)
-
+- [Running the code](#running-the-code)
+- [Quickstart](#quickstart)
+  - [1. Get the code](#1-get-the-code)
+  - [2. Install dependencies](#2-install-dependencies)
+  - [3. Add environment variables](#3-add-environment-variables)
+  - [4. Run it](#4-run-it)
+  - [5. Deploy](#5-deploy)
+- [Populating the database](#populating-the-database)
+- [Models](#models)
+  - [Item](#item)
+  - [Item add-on](#item-add-on)
+  - [Killer](#killer)
+    - [Killer power object](#killer-power-object)
+    - [Killer imgs object](#killer-imgs-object)
+  - [Killer add-on](#killer-add-on)
+  - [Killer perk](#killer-perk)
+  - [Killer power](#killer-power)
+  - [Survivor](#survivor)
+    - [Survivor imgs object](#survivor-imgs-object)
+  - [Survivor perk](#survivor-perk)
+- [Additional information](#additional-information)
+- [Get in touch](#this-api-was-built-by-lucas-lamonier-as-a-part-of-the-razorpawproject)
 
 ## Overview
 
@@ -193,25 +214,199 @@ In order to run this API, you need:
 
 `git clone` or download the code.
 
-#### 2. Installing dependencies
+#### 2. Install dependencies
 
 - Open your favorite CLI in the root folder of the project.
 - Run `npm install`
 - Wait for the dependencies to install
 
-#### 3. Run it!
+#### 3. Add environment variables
+
+- At the root of your project, create a file called `.env.local`
+- Inside this file add 3 variables: `USERNAME`, `PASSWORD`, and `DATABASE`
+- These variables are the credential that allow your application to connect with your Mongo database
+- Your file should look something like this:
+
+```txt
+USERNAME=yourusername
+PASSWORD=your1password2
+DATABASE=mongodb+srv://....
+```
+
+#### 4. Run it
 
 - Run `npm run dev`
 - The API should be running on `http://localhost:3000/api/`
 - You can build scripts to fetch data or use API testing tools such as [Postman](https://www.postman.com/) and [Insomnia](https://insomnia.rest/).
 
 
+#### 5. Deploy
+
+- To get the API online you need two services: dedicated database and a host
+
+- For the database I recommend [MongoDB Atlas](https://www.mongodb.com/). It is extremely unlikely that you will ever go beyond their free tier.
+
+- For hosting, there are tons of options on the internet. My go to for Next.js is obviously [Vercel](https://vercel.com/docs).
+
 ## Populating the database
 
-The folder `data` contains
+This API uses the Mongoose library to handle the database. The file `src/data/db-import-script/importdevdata.js` contains one script that upload the files and other that deletes them.
+
+This file imports dependencies, connects to the database, and reads the files with the raw data.
+
+Note that the lines 50-57 and 71-78 are commented out. Each line refers to one collection. This way, by removing the comment toggle whether the collection should be affected or not.
+
+Next, you need to choose which operation you want to perform. You can do that by passing an argument to the CLI command: `--import` or `--delete`.
+
+The final command would be
+
+```text
+node src/data/db-import-script --import
+```
+
+to add the data and
+
+```text
+node src/data/db-import-script -- delete
+```
+
+The script will run and print on the log information about the status of the operation.
+
+## Models
+
+### Item
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `name` | `string` | The name of the item |
+| `code` | `string` | The unique code |
+| `type` | `string` | The type of item (e.g., flashlight, key) |
+| `rarity` | `string` | The rarity (e.g., very rare, event, limited) |
+| `description` | `string` | The in-game description text |
+| `icon` | `string` | The link to the in-game inventory image of the item |
+
+### Item add-on
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `name` | `string` | The name of the item add-on |
+| `code` | `string` | The unique code |
+| `type` | `string` | The type of item (e.g., flashlight, key) that uses this add-on |
+| `rarity` | `string` | The rarity (e.g., very rare, event, limited) |
+| `description` | `string` | The in-game description text |
+| `icon` | `string` | The link to the in-game inventory image of the item |
+
+### Killer
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `number` | `number` | A unique number that represents a killer |
+| `code` | `string` | The killer's unique [code](#name-codes) |
+| `name` | `string` | The name the killer is called (e.g., The Trapper) |
+| `fullName` | `string` | The killer's actual name (e.g., Sally Smithson, aka The Nurse) |
+| `nationality` | `string` | The killer's nationality. The Demogorgon, for example, does not have a nationality, so it returns `None (Extradimensional)`. |
+| `gender` | `string` | The killer's gender. For some reason. The Demogorgon is `Not applicable (not human)`. Good for them. |
+| `licensed` | `boolean` | Indicates whether the killer is an original DbD character or if it comes from another franchise. For example, `thetrapper` returns `false` and `thedemogorgon` returns `true`. |
+| `dlc` | `string` | The name of the DLC in which the killer was released |
+| `difficulty` | `string` | A string that indicates the overall difficulty of playing the killer |
+| `realm` | `string` or `null` | The map that was released in the same DLC as the killer, returns the name of the map or `null` |
+| `powerAttackType` | `string` | Indicates how the killer attacks: basic attack, traps, chainsaws, etc. |
+| `weapon` | `string` | The killer's weapon's name |
+| `moveSpeed` | `string` | The speed the killer moves normally, the string is the number followed by the unit, e.g., `4.6 m/s`. Michael Myers' speed is a longer string that shows his move speed at every level of Evil Within. |
+| `terrorRadius` | `string` | The killer's terror radius followed by the unit, `32 m` |
+| `height` | `string` | The killer's height, instead of a unit, the possible values are `Short`, `Average`, and `Tall` |
+| `perks_names` | `array` | An array of three strings, which are the names of the killer's perks |
+| `power` | `object` | An object with the killer power's id, name, and code, [more details below](#killer-power) |
+| `overview` | `string` | A quick summary of the killer |
+| `backstory` | `string` | The killer's lore |
+| `imgs` | `object` | An object containing the killer's portrait and store image, [more details below](#killer-imgs)
+
+##### Killer power object
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `powerId` | `number` | A unique number that represents the killer's power |
+| `powerName` | `string` | The name of the power |
+| `powerCode` | `string` | The power's code |
+
+##### Killer imgs object
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `portrait` | `string` | The link to the image that identifies the killer on the character selection grid |
+| `store` | `string` | The link to the image that is shown on the background of the in-game store when browsing items for the killer |
+
+### Killer add-on
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `killerId` | `number` | The number that identifies which killer the add-on belongs to |
+| `killerCode` | `string` | The code that identificas which killer the add-on belongs to |
+| `powerCode` | `string` | The code of the power the add-on belongs to |
+| `name` | `string` | The add-on's name |
+| `addonCode` | `string` | The add-on's code |
+| `rarity` | `string` | The add-on's rarity |
+| `description` | `string` | The add-on's in-game description |
+| `icon` | `string` | The link to the add-on's in-game icon |
+
+### Killer perk
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `number` | The perk's unique id number |
+| `name` | `string` | The perk's number |
+| `code` | `string` | The perk's code |
+| `killerCode` | `string` | The code of the killer the perk belongs to |
+| `killerName` | `string` | The name of the killer the perk belongs to |
+| `description` | `string` | The perk's in-game description |
+| `icon` | `string` | The link to the perk's in-game icon |
+
+### Killer power
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `powerId` | `number` | The power's unique id number |
+| `powerName` | `string` | The name of the killer's power |
+| `powerCode` | `string` | The code of the killer's power |
+| `killerCode` | `string` | The name of the killer the power belongs to |
+| `description` | `string` | The killer power's in-game description |
+| `powerImg` | `array` | An array that contains one of more strings, each representing a link to an image of the killer's power. Some killers, such as The Shape, have more than one image that represents different states of their power. |
+
+### Survivor
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `number` | `number` | A unique number that represents a survivor |
+| `code` | `string` | The survivor's unique [code](#name-codes) |
+| `name` | `string` | The survivor's name |
+| `nationality` | `string` | The survivor's nationality |
+| `licensed` | `boolean` | Indicates whether the survivor is an original DbD character or if it comes from another franchise. For example, `felixrichter` returns `false` and `ashjwilliams` returns `true`. |
+| `dlc` | `string` | The name of the DLC in which the survivor was released |
+| `difficulty` | `string` | A string that indicates the overall difficulty of playing the survivor |
+| `perks_names` | `array` | An array of three strings, which are the names of the survivor's perks |
+| `overview` | `string` | A quick summary of the survivor |
+| `backstory` | `string` | The survivor's lore |
+| `imgs` | `object` | An object containing the killer's portrait and store image, [more details below](#survivor-imgs)
+
+##### Survivor imgs object
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `portrait` | `string` | The link to the image that identifies the survivor on the character selection grid |
+| `store` | `string` | The link to the image that is shown on the background of the in-game store when browsing items for the survivor |
 
 
+### Survivor perk
 
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `number` | The perk's unique id number |
+| `name` | `string` | The perk's number |
+| `code` | `string` | The perk's code |
+| `survivorCode` | `string` | The code of the survivor the perk belongs to |
+| `survivorName` | `string` | The name of the survivor the perk belongs to |
+| `description` | `string` | The perk's in-game description |
+| `icon` | `string` | The link to the perk's in-game icon |
 
 
 
@@ -221,8 +416,13 @@ The folder `data` contains
 
 ## Additional information
 
-#### This API was built by [Lucas Lamonier](https://github.com/LrLamonier).
+#### This API was built by [Lucas Lamonier](https://www.lucaslamonier.com/) as a part of the [RazorPaw<img src="https://github.com/LrLamonier/LrLamonier/blob/main/readme-imgs/rplogo.png?raw=true" width="19" height="19" />Project](https://www.razorpaw.nexus/).
 
-#### You can contact me via my [LinkedIn](https://www.linkedin.com/in/lamonier/) or at [lucasrlamonier@gmail.com](mailto:lucasrlamonier@gmail.com).
+> Hi! I'm a full-stack web developer that loves to use Next.js and the MERN stack to build fun things. If you have an idea or a project that you would like to create, send me a message, maybe we can do something cool together. If you don't and just want to chat, go for it! 😄
 
-Special thanks to [Arthur](https://github.com/ArthR1beiro).
+You can reach me at:
+[<img src="https://github.com/LrLamonier/LrLamonier/blob/main/readme-imgs/mail.png?raw=true" width="20" height="20" /> hello@lucaslamonier.com](mailto:hello@lucaslamonier.com)
+[<img src="https://github.com/LrLamonier/LrLamonier/blob/main/readme-imgs/github.png?raw=true" width="20" height="20" /> /LrLamonier at GitHub](https://github.com/LrLamonier)
+[<img src="https://github.com/LrLamonier/LrLamonier/blob/main/readme-imgs/linkedin.png?raw=true" width="20" height="20" /> /lamonier at LinkedIn](https://www.linkedin.com/in/lamonier/)
+
+###### Thanks a lot, Behaviour people. Y'all're awesome!

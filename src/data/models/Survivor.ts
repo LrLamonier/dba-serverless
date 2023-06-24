@@ -22,9 +22,9 @@ export interface ISurvivor {
 }
 
 const survivorSchema = new Schema<ISurvivor>({
-  number: { type: Number, required: true },
-  name: { type: String, required: true },
-  code: { type: String, required: true },
+  number: { type: Number, unique: true, required: true },
+  name: { type: String, unique: true, required: true },
+  code: { type: String, unique: true, required: true },
   licensed: { type: Boolean, required: true },
   difficulty: { type: String, required: true },
   role: { type: String, required: true },

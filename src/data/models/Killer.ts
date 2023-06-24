@@ -36,10 +36,10 @@ export interface IKiller {
 }
 
 const killerSchema = new Schema<IKiller>({
-  number: { type: Number, required: true },
-  code: { type: String, required: true },
-  name: { type: String, required: true },
-  fullName: { type: String, required: true },
+  number: { type: Number, unique: true, required: true },
+  code: { type: String, unique: true, required: true },
+  name: { type: String, unique: true, required: true },
+  fullName: { type: String, unique: true, required: true },
   nationality: { type: String, required: true },
   gender: { type: String, required: true },
   licensed: { type: Boolean, required: true },

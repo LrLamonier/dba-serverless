@@ -10,10 +10,10 @@ export interface IKillerPower {
 }
 
 const killerPowerSchema = new Schema<IKillerPower>({
-  powerId: { type: Number, required: true },
-  powerName: { type: String, required: true },
-  powerCode: { type: String, required: true },
-  killerCode: { type: String, required: true },
+  powerId: { type: Number, unique: true, required: true },
+  powerName: { type: String, unique: true, required: true },
+  powerCode: { type: String, unique: true, required: true },
+  killerCode: { type: String, unique: true, required: true },
   description: { type: String, required: true },
   powerImg: [
     {

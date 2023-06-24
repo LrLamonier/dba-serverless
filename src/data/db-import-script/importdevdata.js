@@ -10,10 +10,13 @@ const SurvivorPerk = require("./models/survivorPerkModel");
 const KillerPerk = require("./models/killerPerkModel");
 const Killer = require("./models/killerModel");
 
-dotenv.config({ path: "./config.env" });
-const DB = process.env.DATABASE;
+// starting the database
 
+dotenv.config({ path: "./.env.local" });
+const DB = process.env.DATABASE;
 mongoose.connect(DB, {}).then(() => console.log("DB online!"));
+
+// collection models
 
 const itemAddons = JSON.parse(
   fs.readFileSync(`${__dirname}/raw-json/itemAddons.json`, "utf-8")
@@ -39,6 +42,8 @@ const survivorPerks = JSON.parse(
 const survivors = JSON.parse(
   fs.readFileSync(`${__dirname}/raw-json/survivors.json`, "utf-8")
 );
+
+// scripts
 
 const importData = async () => {
   try {

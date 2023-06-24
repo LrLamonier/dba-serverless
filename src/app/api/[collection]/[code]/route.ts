@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import models from "@/data/models";
 import dbConnect from "@/lib/dbConnect";
-import { getOne } from "@/utils/fns";
+import { limitFields } from "@/utils/fns";
 
 export const GET = async (
   req: NextRequest,
@@ -21,8 +21,29 @@ export const GET = async (
 
     await dbConnect();
 
-    const resBody = await getOne(collection, code, req);
-    return NextResponse.json(...resBody);
+    const document = await models[collection]
+      .find({ code })
+      .select(limitFields(req));
+
+    if (document.length === 0) {
+      return NextResponse.json(
+        {
+          status: "fail",
+          message:
+            "What you are looking for is nowhere to be found on the Entity's realm.",
+        },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        status: "success",
+        results: document.length,
+        data: document,
+      },
+      { status: 200 }
+    );
   } catch (err) {
     console.log(`error at: /api/${collection}/${code}`, err);
     return NextResponse.json(
