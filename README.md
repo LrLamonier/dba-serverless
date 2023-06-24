@@ -421,6 +421,7 @@ The script will run and print on the log information about the status of the ope
 > Hi! I'm a full-stack web developer that loves to use Next.js and the MERN stack to build fun things. If you have an idea or a project that you would like to create, send me a message, maybe we can do something cool together. If you don't and just want to chat, go for it! 😄
 
 You can reach me at:
+
 [<img src="https://github.com/LrLamonier/LrLamonier/blob/main/readme-imgs/mail.png?raw=true" width="20" height="20" /> hello@lucaslamonier.com](mailto:hello@lucaslamonier.com)
 
 [<img src="https://github.com/LrLamonier/LrLamonier/blob/main/readme-imgs/github.png?raw=true" width="20" height="20" /> /LrLamonier at GitHub](https://github.com/LrLamonier)
