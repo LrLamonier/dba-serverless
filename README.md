@@ -422,7 +422,9 @@ The script will run and print on the log information about the status of the ope
 
 You can reach me at:
 [<img src="https://github.com/LrLamonier/LrLamonier/blob/main/readme-imgs/mail.png?raw=true" width="20" height="20" /> hello@lucaslamonier.com](mailto:hello@lucaslamonier.com)
+
 [<img src="https://github.com/LrLamonier/LrLamonier/blob/main/readme-imgs/github.png?raw=true" width="20" height="20" /> /LrLamonier at GitHub](https://github.com/LrLamonier)
+
 [<img src="https://github.com/LrLamonier/LrLamonier/blob/main/readme-imgs/linkedin.png?raw=true" width="20" height="20" /> /lamonier at LinkedIn](https://www.linkedin.com/in/lamonier/)
 
 ###### Thanks a lot, Behaviour people. Y'all're awesome!
